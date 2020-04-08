@@ -7,7 +7,7 @@ FILE *urandom;
 
 int getLen(uint8_t *s)
 {
-    return sizeof(s)/sizeof(uint8_t);
+    return sizeof(s) / sizeof(uint8_t);
 }
 
 int getRandomNumber()
@@ -109,30 +109,46 @@ uint8_t *caesar_decrypt(uint8_t *ciphertext, int n)
     return res;
 }
 
-uint8_t *spartan_encrypt(char *plaintext, int circ, int len)
-{   
-    int i ,j , counter = 0;
-    char** tmp_arr = malloc(circ*len);
-    uint8_t *res;
-    for(i = 0; i < circ; i++){
-        if (plaintext[counter] == '\0')
-            break;
-        for(j = 0; j < len; j++){
-            printf(" (%c) " , plaintext[counter]);
-            if(!plaintext[counter])
-                break;
-            tmp_arr[i][j] = plaintext[counter];
-            counter++;
+uint8_t *spartan_encrypt(uint8_t *plaintext, int circ, int len)
+{
+    int size = getLen(plaintext);
+    printf("size = %d\n", size);
+    int i = 0, j = 0 , index;
+    
+    char tmp_arr[len][circ];
+    for (index = 0; index < size; index++)
+    {
+        printf("eimai edw(%c)\n", plaintext[index]);
+        tmp_arr[i][j] = plaintext[index];
+        i++;
+        if (i == len)
+        {
+            j++;
+            i = 0;
         }
     }
-    counter = 0;
-    for(j = 0; j < len; j++){
-        for(i = 0; i < circ; i++){
-            res[counter] = tmp_arr[i][j];
-            counter++;
+
+    for (int a = 0; a < circ; a++)
+    {
+        for (int b = 0; b < len; b++)
+        {
+            printf(" |%c| ", tmp_arr[b][a]);
         }
+        printf("\n");
     }
-    res[counter] = '\0';
+    printf("-------------------\n");
+    uint8_t *res =malloc(size);
+    index = 0;
+    for (int b = 0; b < len; b++)
+    {
+        for (int a = 0; a < circ; a++)
+        {
+            //printf(" |%c| ", tmp_arr[b][a]);
+            res[index] = tmp_arr[b][a];
+            index++;
+        }
+        
+    }
 
     return res;
 }
@@ -164,15 +180,11 @@ int main(int argc, char **argv)
         fclose(file);
     }
  */
-    uint8_t *message = "this is a message";
+    uint8_t *message = "thisames";
 
-    uint8_t *ci = spartan_encrypt(message, 4 , 4);
+    uint8_t *ci = spartan_encrypt(message, 2, 4);
 
     printf("the res text is = (%s)\n", ci);
-
-    
-
-    
 
     printf("\n");
     return 0;
