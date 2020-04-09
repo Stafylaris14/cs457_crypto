@@ -4,11 +4,49 @@
 #include <time.h>
 
 FILE *urandom;
+char charSet[62];
+
+void init_char_set()
+{
+    int i = 0;
+    char index = (char)65;
+    /* kefalaia */
+    for (i = 0; i < 26; i++)
+    {
+        charSet[i] = index;
+        index++;
+    }
+    /* mikra */
+    index = 97;
+    for (i = 26; i < 52; i++)
+    {
+        charSet[i] = index;
+        index++;
+    }
+
+    index = 48;
+    for (i = 52; i < 62; i++)
+    {
+        charSet[i] = index;
+        index++;
+    }
+}
+
+/* returns -1 if not found  :(  */
+int get_char_index(char c)
+{
+    int i;
+    for (i = 0; i < 62; i++)
+        if (c == charSet[i])
+            return i;
+    
+    return -1;
+}
 
 int getLen(uint8_t *s)
 {
-    char *str = s;
-    return sizeof(s) / sizeof(uint8_t);
+    
+    return sizeof((char*)s) / sizeof(uint8_t);
 }
 
 int getRandomNumber()
@@ -45,24 +83,16 @@ uint8_t *generateKey(int size)
 uint8_t *one_time_pad_encrypt(uint8_t *message, uint8_t *key)
 {
     int size = getLen(message);
-    int index;
+    int index , char_in_char_set;
     uint8_t *res = malloc(sizeof(message));
     for (index = 0; index < size; index++)
     {
-        res[index] = (char)message[index] + key[index];
+        char_in_char_set = get_char_index((char)message[index]) + get_char_index((char)key[index]);
+        if(char_in_char_set > 62)
+            char_in_char_set = char_in_char_set - 62;
 
-        res[index] = res[index] % 50;
-        printf("eimai gia to res[] = %d\n", res[index]);
-        /* kefalaia */
-        if (res[index] < 26)
-        {
-            res[index] += 65;
-        }
-        else if (res[index] <= 50)
-        {
-            res[index] = res[index] % 26;
-            res[index] += 97;
-        }
+
+        res[index] = charSet[char_in_char_set];
     }
     res[index] = '\0';
     return res;
@@ -72,12 +102,16 @@ uint8_t *one_time_pad_decrypt(uint8_t *ciphertext, uint8_t *key)
 {
     int size = getLen(key);
     int i;
+    int char_in_char_set;
     uint8_t *message = malloc(size);
     for (i = 0; i < size; i++)
     {
-        message[i] = ciphertext[i] - key[i] % 26;
-        message[i] = message[i] % 26;
-        message[i] = message[i] + 65;
+        char_in_char_set = get_char_index((char)ciphertext[i]) - get_char_index((char)key[i]);
+
+        if(char_in_char_set < 0)
+            char_in_char_set = char_in_char_set + 62;
+        
+        message[i] = charSet[char_in_char_set];
     }
     return message;
 }
@@ -191,7 +225,7 @@ uint8_t *spartan_decrypt(uint8_t *ciphertext, int circ, int len)
         }
         printf("\n");
     }
-    
+
     res[index] = '\0';
     return res;
 }
@@ -223,7 +257,21 @@ int main(int argc, char **argv)
         fclose(file);
     }
  */
-    uint8_t *message = "thisamesage fo";
+    uint8_t *message = "Eimaipro";
+    init_char_set();
+    uint8_t *key_otp = generateKey(getLen(message));
+    uint8_t* crypto_otp = one_time_pad_encrypt(message ,key_otp );
+
+    printf("-----otp encryption---\n");
+
+    printf("the crypto text -> (%s)\n" , crypto_otp);
+
+    printf("ORIGINAL MESSAGE WAS (%s)" , one_time_pad_decrypt(crypto_otp , key_otp));
+
+
+
+
+    
 
     uint8_t *ci = spartan_encrypt(message, 2, 4);
 
