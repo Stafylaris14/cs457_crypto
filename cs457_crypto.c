@@ -285,9 +285,8 @@ uint8_t *vigenere_encrypt(uint8_t *plaintext, uint8_t *key)
         j = get_capital(key[index]);
 
         res[index] = v_char_set[i][j];
-        
     }
-    
+
     res[index] = '\0';
     return res;
 }
@@ -298,10 +297,11 @@ uint8_t *vigenere_decrypt(uint8_t *ciphertext, uint8_t *key)
     uint8_t *res = malloc(sizeof(ciphertext));
     for (index = 0; index < size; index++)
     {
-        
+
         j = get_capital(key[index]);
-        for(i = 0; i < 26; i++)
-            if(v_char_set[i][j] == ciphertext[index])break;
+        for (i = 0; i < 26; i++)
+            if (v_char_set[i][j] == ciphertext[index])
+                break;
         res[index] = v_char_set[i][0];
     }
     res[index] = '\0';
@@ -334,7 +334,18 @@ int main(int argc, char **argv)
         fclose(file);
     }
  */
-    uint8_t message[] = "Eimaipro";
+
+    char *line;
+    int linesize;
+    size_t len;
+    printf("please enter message to encrypt:");
+    linesize = getline(&line, &len, stdin);
+    printf("\n");
+    int i = 0;
+    uint8_t message[linesize];
+
+    for (i = 0; i < linesize; i++)
+        message[i] = line[i];
     init_char_set();
 
     printf("--------otp encryption--------\n");
@@ -360,12 +371,23 @@ int main(int argc, char **argv)
     printf("--------spartan--------\n");
     init_v_char_set();
 
-    uint8_t v_message []= "EIMAIPRO";
-    uint8_t key_v []= "AAAAAAAZ";
-    uint8_t* crypto_v = vigenere_encrypt(v_message , key_v);
-    printf("the crypto for v is (%s)\n" , crypto_v);
-    printf("the original for v was (%s)\n" , vigenere_decrypt(crypto_v , key_v));
+    printf("please enter message to encrypt with Vigenere (ALL CAPS):");
+    linesize = getline(&line, &len, stdin);
+    uint8_t v_message[linesize];
+    for (i = 0; i < linesize; i++)
+        v_message[i] = line[i];
 
-    
+    printf("please enter key to decrypt with Vigenere (ALL CAPS):");
+    linesize = getline(&line, &len, stdin);
+    uint8_t key_v[linesize];
+    for (i = 0; i < linesize; i++)
+        key_v[i] = line[i];
+
+    uint8_t *crypto_v = vigenere_encrypt(v_message, key_v);
+    printf("the crypto for v is (%s)\n", crypto_v);
+    printf("the original for v was (%s)\n", vigenere_decrypt(crypto_v, key_v));
+
     return 0;
 }
+
+/* done in 2 hours */
