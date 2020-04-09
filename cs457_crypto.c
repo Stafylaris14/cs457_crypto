@@ -7,6 +7,7 @@ FILE *urandom;
 
 int getLen(uint8_t *s)
 {
+    char *str = s;
     return sizeof(s) / sizeof(uint8_t);
 }
 
@@ -113,19 +114,26 @@ uint8_t *spartan_encrypt(uint8_t *plaintext, int circ, int len)
 {
     int size = getLen(plaintext);
     printf("size = %d\n", size);
-    int i = 0, j = 0 , index;
-    
+    int i = 0, j = 0, index;
+
     char tmp_arr[len][circ];
+    for (int a = 0; a < circ; a++)
+    {
+        for (int b = 0; b < len; b++)
+        {
+            tmp_arr[b][a] = '\\';
+        }
+        printf("\n");
+    }
     for (index = 0; index < size; index++)
     {
-        printf("eimai edw(%c)\n", plaintext[index]);
-        tmp_arr[i][j] = plaintext[index];
-        i++;
         if (i == len)
         {
             j++;
             i = 0;
         }
+        tmp_arr[i][j] = plaintext[index];
+        i++;
     }
 
     for (int a = 0; a < circ; a++)
@@ -136,20 +144,55 @@ uint8_t *spartan_encrypt(uint8_t *plaintext, int circ, int len)
         }
         printf("\n");
     }
-    printf("-------------------\n");
-    uint8_t *res =malloc(size);
+
+    uint8_t *res = malloc(size);
     index = 0;
     for (int b = 0; b < len; b++)
     {
         for (int a = 0; a < circ; a++)
         {
             //printf(" |%c| ", tmp_arr[b][a]);
+            /*  if (tmp_arr[b][a] == '\\')
+                continue; */
             res[index] = tmp_arr[b][a];
             index++;
         }
-        
     }
 
+    return res;
+}
+
+uint8_t *spartan_decrypt(uint8_t *ciphertext, int circ, int len)
+{
+    char tmp_arr[len][circ];
+    int size = getLen(ciphertext);
+    int i = 0;
+    int j = 0;
+    int index;
+    uint8_t *res = malloc(size);
+    for (index = 0; index < size; index++)
+    {
+        tmp_arr[i][j] = ciphertext[index];
+        j++;
+        if (j == circ)
+        {
+            j = 0;
+            i++;
+        }
+    }
+    index = 0;
+    for (j = 0; j < circ; j++)
+    {
+        for (i = 0; i < len; i++)
+        {
+            res[index] = tmp_arr[i][j];
+            index++;
+            printf("[%c] ", tmp_arr[i][j]);
+        }
+        printf("\n");
+    }
+    
+    res[index] = '\0';
     return res;
 }
 
@@ -180,11 +223,15 @@ int main(int argc, char **argv)
         fclose(file);
     }
  */
-    uint8_t *message = "thisames";
+    uint8_t *message = "thisamesage fo";
 
     uint8_t *ci = spartan_encrypt(message, 2, 4);
 
     printf("the res text is = (%s)\n", ci);
+
+    uint8_t *spartan_plaintext = spartan_decrypt(ci, 2, 4);
+
+    printf("the original message was (%s)\n", spartan_plaintext);
 
     printf("\n");
     return 0;
