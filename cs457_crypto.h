@@ -33,3 +33,7 @@ uint8_t *caesar_decrypt(uint8_t *ciphertext, int  n);
 uint8_t *spartan_encrypt(uint8_t *plaintext, int  circ, int  len);
 
 uint8_t *spartan_decrypt(uint8_t *ciphertext, int  circ, int  len);
+
+uint8_t *vigenere_encrypt(uint8_t *plaintext, uint8_t *key);
+
+uint8_t *vigenere_decrypt(uint8_t *ciphertext, uint8_t *key);
