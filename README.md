@@ -1,4 +1,6 @@
-# csd3722_assign1
+# First assignment for hy457- Security Systems
 
-Gia na doulepsei kanonika eftiaxa ena char_set me olous tous xaraxtires gia na mporw na kanw prosthafereseis me to index tou pinaka apo char
+there is a spimple crypto library using 4 common methods
+
+
 
